@@ -10,4 +10,3 @@ Conjunto de datos:
 
 Modelo: 
 - Transferencia de aprendizaje de Yolo V5 para detección de distracciones y DLIB con shape_predictor_68_face_landmarks para detección de somnolencia.
-- 
