@@ -1,4 +1,4 @@
-# Deteccion de somnolencia y distracciones al volante
+# Detección de somnolencia y distracciones al volante
 
 Conjunto de datos:
 - Dataset containing smoking and not-smoking images (smoker vs non-smoker)
