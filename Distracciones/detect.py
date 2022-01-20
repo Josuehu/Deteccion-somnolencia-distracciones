@@ -34,9 +34,11 @@ from utils.general import (LOGGER, check_file, check_img_size, check_imshow, che
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, time_sync
 
+import somnolencia
+
 
 @torch.no_grad()
-def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
+def run(weights=ROOT / 'best.pt',  # model.pt path(s)
         source=ROOT / 'data/images',  # file/dir/URL/glob, 0 for webcam
         imgsz=(640, 640),  # inference size (height, width)
         conf_thres=0.25,  # confidence threshold
@@ -100,6 +102,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
     model.warmup(imgsz=(1, 3, *imgsz), half=half)  # warmup
     dt, seen = [0.0, 0.0, 0.0], 0
     for path, im, im0s, vid_cap, s in dataset:
+        
         t1 = time_sync()
         im = torch.from_numpy(im).to(device)
         im = im.half() if half else im.float()  # uint8 to fp16/32
@@ -130,6 +133,8 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                 s += f'{i}: '
             else:
                 p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
+
+            im0  = somnolencia.deteccionSomnolencia(im0)
 
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
@@ -167,7 +172,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 
             # Stream results
             im0 = annotator.result()
-            if view_img:
+            if view_img: 
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
 
@@ -202,7 +207,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5s.pt', help='model path(s)')
+    parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'best.pt', help='model path(s)')
     parser.add_argument('--source', type=str, default=ROOT / 'data/images', help='file/dir/URL/glob, 0 for webcam')
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640], help='inference size h,w')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
