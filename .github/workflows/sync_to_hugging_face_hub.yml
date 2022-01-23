@@ -1,6 +1,6 @@
 name: Sync to Hugging Face hub
 on:
-  push:
+  push: git config lfs.allowincompletepush true
     branches: [main]
 
   # to run this workflow manually from the Actions tab
@@ -15,5 +15,5 @@ jobs:
           fetch-depth: 0
       - name: Push to hub
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://josue:$HF_TOKEN@huggingface.co/spaces/Josue/GuardIAn main  git config lfs.allowincompletepush true
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}          
+        run: git push --force https://josue:$HF_TOKEN@huggingface.co/spaces/Josue/GuardIAn main  
