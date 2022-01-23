@@ -1,14 +1,3 @@
----
-title: GuardIAn
-emoji: 👁
-colorFrom: indigo
-colorTo: red
-sdk: gradio
-app_file: app.py
-pinned: false
----
-
-
 # Detección de somnolencia y distracciones al volante
 
 Conducir es una actividad compleja que requiere percibir continuamente la situación cambiante del tráfico, evaluarla, decidir las acciones más adecuadas a realizar en cada caso y ejecutar correctamente estas acciones. Todo este proceso precisa que el conductor se encuentre en óptimas condiciones psicofísicas para que pueda llevarse a cabo adecuadamente.
