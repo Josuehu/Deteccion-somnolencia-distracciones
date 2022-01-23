@@ -3,11 +3,11 @@ import torch
 from PIL import Image
 
 # Images
-torch.hub.download_url_to_file('https://github.com/ultralytics/yolov5/raw/master/data/images/zidane.jpg', 'zidane.jpg')
-torch.hub.download_url_to_file('https://github.com/ultralytics/yolov5/raw/master/data/images/bus.jpg', 'bus.jpg')
+#torch.hub.download_url_to_file('https://github.com/ultralytics/yolov5/raw/master/data/images/zidane.jpg', 'zidane.jpg')
+torch.hub.download_url_to_file('https://github.com/Josuehu/Deteccion-somnolencia-distracciones/tree/main/Distracciones/we.jpg', 'we.jpg')
 
 # Model
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s')  # force_reload=True to update
+model = torch.hub.load('Josuehu/Deteccion-somnolencia-distracciones/tree/main/Distracciones', 'best')  # force_reload=True to update
 
 
 def yolo(im, size=640):
