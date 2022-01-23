@@ -29,3 +29,5 @@ article = "<p style='text-align: center'>YOLOv5 is a family of compound-scaled o
 examples = [['zidane.jpg'], ['bus.jpg']]
 gr.Interface(yolo, inputs, outputs, title=title, description=description, article=article, examples=examples, theme="huggingface").launch(
     debug=True)
+
+git config lfs.allowincompletepush true
