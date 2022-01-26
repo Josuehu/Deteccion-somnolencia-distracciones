@@ -2,6 +2,7 @@ from scipy.spatial import distance
 from imutils import face_utils
 from pydub import AudioSegment
 from pydub.playback import play
+import numpy as np
 import _thread
 import imutils
 import time
@@ -26,28 +27,22 @@ def eye_aspect_ratio(eye):
 
 hilo_flag= True #Solo para desarrollo, version final solo True
 l_alarma = _thread.allocate_lock() # Puede ser N Locks, pero solo puede ser adquirido uno a la vez
-ejecucion = 0
 def sound_alarm():
-	print('Comienza Hilo')
-	global ejecucion	
-	while hilo_flag:
-		contador_alarma = 0
-		ejecucion += 1
-		l_alarma.acquire() 
-		contador_alarma += 1
-		print(f"Numero de ejecucion :{ejecucion}, contador de veces que se ha repetido la alarma : {contador_alarma}")
-		ALARM = AudioSegment.from_mp3("sound/alarm3.mp3")
-		play(ALARM)		
-	print('Termina Hilo')
+    global ejecucion
+    while hilo_flag:
+        l_alarma.acquire()
+        ALARM = AudioSegment.from_mp3("sound/alarm3.mp3")
+        for i in np.arange(3):
+            play(ALARM)
 
 
 # define two constants, one for the eye aspect ratio to indicate
 # blink and then a second constant for the number of consecutive
 # frames the eye must be below the threshold for to set off the
 # alarm
-EYE_AR_THRESH = 0.3
-EYE_AR_CONSEC_FRAMES = 72
-EYE_AR_NOT_DETECTED_FRAMES = 96
+EYE_AR_THRESH = 0.22
+EYE_AR_CONSEC_FRAMES = 15
+EYE_AR_NOT_DETECTED_FRAMES = 25
 
 # initialize the frame counters for drowsiness and eyes distraction
 # as well as a boolean used to indicate if the alarm is going off
@@ -72,6 +67,9 @@ l_alarma.acquire() # Obtengo el candado previo a crear hilo
 _thread.start_new_thread(sound_alarm,()) #Crea un único hilo para las alarmas 
 
 def deteccionSomnolencia(frame):
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+
     global COUNTER_DROWSINESS 
     global COUNTER_EYES_NOT_DETECTED
     
@@ -83,19 +81,19 @@ def deteccionSomnolencia(frame):
 	
 	#Si subjects se encuentra vacio no se detectaron ojos en el cuadro 
     if not subjects:
-        COUNTER_EYES_NOT_DETECTED += 1
-        
+        COUNTER_EYES_NOT_DETECTED += 1        
         if COUNTER_EYES_NOT_DETECTED >= EYE_AR_NOT_DETECTED_FRAMES:
 			#Si esta distraido
-            MENSAJE_ALERTA = "***CONDUCTOR DISTRAIDO!***"
+            #MENSAJE_ALERTA = "***CONDUCTOR DISTRAIDO!***"
+            MENSAJE_ALERTA = "Conductor distraido : " + current_time 
             cv2.putText(frame, MENSAJE_ALERTA, (10, 30),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-			#print(f"Desbloqueando lock de distraccion ojos: {COUNTER_EYES_NOT_DETECTED} , {EYE_AR_NOT_DETECTED_FRAMES}")
+            #print(f"Desbloqueando lock de distraccion ojos: {COUNTER_EYES_NOT_DETECTED} , {EYE_AR_NOT_DETECTED_FRAMES}")
             if l_alarma.locked():
                 l_alarma.release()
     else:
         COUNTER_EYES_NOT_DETECTED = 0
-        time.sleep(0.020)
+        time.sleep(0.02)
         if not l_alarma.locked():
             l_alarma.acquire()
 
@@ -117,6 +115,7 @@ def deteccionSomnolencia(frame):
 
 			# average the eye aspect ratio together for both eyes
             ear = (leftEAR + rightEAR) / 2.0
+            
 
 			# compute the convex hull for the left and right eye
             leftEyeHull = cv2.convexHull(leftEye)
@@ -128,29 +127,24 @@ def deteccionSomnolencia(frame):
 		
 			# check to see if the eye aspect ratio is below the blink
 			# threshold, and if so, increment the blink frame counter
-            if ear < EYE_AR_THRESH:
-                #flag += 1
+            if ear < EYE_AR_THRESH:      
                 COUNTER_DROWSINESS += 1
-
-				# if the eyes were closed for a sufficient number of then sound the alarm
+                # if the eyes were closed for a sufficient number of then sound the alarm
                 if COUNTER_DROWSINESS >= EYE_AR_CONSEC_FRAMES:
 						#Si esta somsoliento
-                        MENSAJE_ALERTA = "***ALERTA DE SOMNOLENCIA!***"
+                        #MENSAJE_ALERTA = "***ALERTA DE SOMNOLENCIA!***"
+                        MENSAJE_ALERTA = "Conductor distraido : " + current_time  
                         cv2.putText(frame, MENSAJE_ALERTA, (10, 30),
 							cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-						#print(f"Desbloqueando lockde somnolencia: {COUNTER_DROWSINESS} , {EYE_AR_CONSEC_FRAMES}")
+                        #print(f"Desbloqueando lockde somnolencia: {COUNTER_DROWSINESS} , {EYE_AR_CONSEC_FRAMES}")
                         if l_alarma.locked():
-                            l_alarma.release()					
-										
-		
+                            l_alarma.release()
 			# otherwise, the eye aspect ratio is not below the blink
 			# threshold, so reset the counter and alarm
             else:
                 COUNTER_DROWSINESS = 0
-                time.sleep(0.020)
+                time.sleep(0.02)
                 if not l_alarma.locked():
                     l_alarma.acquire()
 					
-		
-	#cv2.imshow("Frame", frame) # RETORNAR IMAGEN
     return frame

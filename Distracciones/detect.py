@@ -35,6 +35,7 @@ from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, time_sync
 
 import somnolencia
+ 
 
 
 @torch.no_grad()
@@ -99,7 +100,7 @@ def run(weights=ROOT / 'best.pt',  # model.pt path(s)
     vid_path, vid_writer = [None] * bs, [None] * bs
 
     # Run inference
-    model.warmup(imgsz=(1, 3, *imgsz), half=half)  # warmup
+    model.warmup(imgsz=(1, 3, *imgsz), half=half)  # warmup 
     dt, seen = [0.0, 0.0, 0.0], 0
     for path, im, im0s, vid_cap, s in dataset:
         
@@ -134,7 +135,9 @@ def run(weights=ROOT / 'best.pt',  # model.pt path(s)
             else:
                 p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
 
+            """VERIFICAR SUEÑO O DISTRACCIÓN DE OJOS"""
             im0  = somnolencia.deteccionSomnolencia(im0)
+            
 
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
@@ -203,6 +206,10 @@ def run(weights=ROOT / 'best.pt',  # model.pt path(s)
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
+    
+    
+
+
 
 
 def parse_opt():
@@ -240,8 +247,7 @@ def parse_opt():
 
 def main(opt):
     check_requirements(exclude=('tensorboard', 'thop'))
-    run(**vars(opt))
-
+    run(**vars(opt)) 
 
 if __name__ == "__main__":
     opt = parse_opt()
