@@ -41,8 +41,8 @@ def sound_alarm():
 # frames the eye must be below the threshold for to set off the
 # alarm
 EYE_AR_THRESH = 0.22
-EYE_AR_CONSEC_FRAMES = 15
-EYE_AR_NOT_DETECTED_FRAMES = 25
+EYE_AR_CONSEC_FRAMES = 10
+EYE_AR_NOT_DETECTED_FRAMES = 20
 
 # initialize the frame counters for drowsiness and eyes distraction
 # as well as a boolean used to indicate if the alarm is going off
@@ -133,7 +133,7 @@ def deteccionSomnolencia(frame):
                 if COUNTER_DROWSINESS >= EYE_AR_CONSEC_FRAMES:
 						#Si esta somsoliento
                         #MENSAJE_ALERTA = "***ALERTA DE SOMNOLENCIA!***"
-                        MENSAJE_ALERTA = "Conductor distraido : " + current_time  
+                        MENSAJE_ALERTA = "Conductor dormido : " + current_time  
                         cv2.putText(frame, MENSAJE_ALERTA, (10, 30),
 							cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                         #print(f"Desbloqueando lockde somnolencia: {COUNTER_DROWSINESS} , {EYE_AR_CONSEC_FRAMES}")

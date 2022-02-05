@@ -35,6 +35,8 @@ from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, time_sync
 
 import somnolencia
+
+import streamlit as st 
  
 
 
@@ -64,6 +66,7 @@ def run(weights=ROOT / 'best.pt',  # model.pt path(s)
         hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
         dnn=False,  # use OpenCV DNN for ONNX inference
+        output = None
         ):
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
@@ -175,9 +178,12 @@ def run(weights=ROOT / 'best.pt',  # model.pt path(s)
 
             # Stream results
             im0 = annotator.result()
-            if view_img: 
-                cv2.imshow(str(p), im0)
-                cv2.waitKey(1)  # 1 millisecond
+            if view_img:
+                if output: 
+                    output(cv2.cvtColor(im0, cv2.COLOR_BGR2RGB))
+                else:
+                    cv2.imshow(str(p), im0)
+                    cv2.waitKey(1)  # 1 millisecond
 
             # Save results (image with detections)
             if save_img:
@@ -206,6 +212,8 @@ def run(weights=ROOT / 'best.pt',  # model.pt path(s)
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
+
+   
     
     
 
@@ -248,6 +256,7 @@ def parse_opt():
 def main(opt):
     check_requirements(exclude=('tensorboard', 'thop'))
     run(**vars(opt)) 
+
 
 if __name__ == "__main__":
     opt = parse_opt()
